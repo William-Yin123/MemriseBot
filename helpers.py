@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
 
-delay = 3
+delay = 2
 
 def login(username, password):
     driver = webdriver.Chrome()
@@ -29,7 +29,7 @@ def answer_correctly(driver, input, table, cursor, question):
     btn = driver.find_element_by_class_name("next-button")
     ActionChains(driver).move_to_element(btn).click(btn).perform()
 
-def answer_incorrectly(driver):
+def answer_incorrectly(driver, table, cursor, question):
     query = cursor.execute("select french from " + table + " where english = :question", {"question": question})
     answer = query.fetchone()[0]
     btn = driver.find_element_by_class_name("next-button")
@@ -53,7 +53,7 @@ def submit(driver, table, cursor, question, accuracy):
         if randint(0, 100) <= accuracy:
             answer_correctly(driver, input, table, cursor, question)
         else:
-            answer_incorrectly(driver)
+            answer_incorrectly(driver, table, cursor, question)
     else:
         query = cursor.execute("select french from " + table + " where english = :question", {"question": question})
         results = query.fetchall()
