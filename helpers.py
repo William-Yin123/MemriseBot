@@ -3,7 +3,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
 
-delay = 2
+
+delay = 4
+
 
 def login(username, password):
     driver = webdriver.Chrome()
@@ -22,15 +24,17 @@ def login(username, password):
     password_field.submit()
     return driver
 
+
 def answer_correctly(driver, input, table, cursor, question):
     input.clear()
-    query = cursor.execute("select french from " + table + " where english = :question", {"question": question})
+    query = cursor.execute("select french from [" + table + "] where english = :question", {"question": question})
     input.send_keys(query.fetchone()[0])
     btn = driver.find_element_by_class_name("next-button")
     ActionChains(driver).move_to_element(btn).click(btn).perform()
 
+
 def answer_incorrectly(driver, table, cursor, question):
-    query = cursor.execute("select french from " + table + " where english = :question", {"question": question})
+    query = cursor.execute("select french from [" + table + "] where english = :question", {"question": question})
     answer = query.fetchone()[0]
     btn = driver.find_element_by_class_name("next-button")
     ActionChains(driver).move_to_element(btn).click(btn).perform()
@@ -41,6 +45,7 @@ def answer_incorrectly(driver, table, cursor, question):
     input = driver.find_element_by_css_selector('input.typing-type-here')
     input.clear()
     input.send_keys(answer)
+
 
 def submit(driver, table, cursor, question, accuracy):
     input = None
@@ -55,10 +60,10 @@ def submit(driver, table, cursor, question, accuracy):
         else:
             answer_incorrectly(driver, table, cursor, question)
     else:
-        query = cursor.execute("select french from " + table + " where english = :question", {"question": question})
+        query = cursor.execute("select french from [" + table + "] where english = :question", {"question": question})
         results = query.fetchall()
         if not len(results):
-            query = cursor.execute("select english from " + table + " where french = :question", {"question": question})
+            query = cursor.execute("select english from [" + table + "] where french = :question", {"question": question})
             results = query.fetchall()
 
         answer = results[0][0]
